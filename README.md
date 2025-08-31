@@ -4,18 +4,18 @@
 [![Javadoc](https://javadoc.io/badge2/io.github.romann-broque/fixture-annotations/javadoc.svg)](https://javadoc.io/doc/io.github.romann-broque/fixture-annotations)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
-Stop wiring test objects by hand. Fixtures are now writing themselves. </br>
+✋ Stop wiring test objects by hand. </br> ✨ Fixtures are now writing themselves. </br>
 
 Annotate a `DataSet` and let the compiler produce a fluent `*Fixture` API (`buildDefault()`, `with…`, `without…`) so you can express test intent in a couple of lines.
 
-- **`fixture-annotations`** — public annotations to mark your DataSet classes
-- **`fixture-processor`** — the annotation processor that generates fixture builders
+- **`fixture-annotations`** — 🏷️ public annotations to mark your DataSet classes
+- **`fixture-processor`** — ⚙️ the annotation processor that generates fixture builders
 
-> Java 21+, Gradle 8+, Maven 3.9+. Works with plain JUnit and Spring Boot.
+> 🔧 Java 21+, Gradle 8+, Maven 3.9+. Works with plain JUnit and Spring Boot.
 
 ---
 
-## Installation
+## 📦 Installation
 
 ### Gradle (Java)
 
@@ -24,71 +24,20 @@ repositories { mavenCentral() }
 
 // Generate fixtures for application sources (src/main/java)
 dependencies {
-  implementation "io.github.romann-broque:fixture-annotations"
-  annotationProcessor "io.github.romann-broque:fixture-processor"
+  implementation "io.github.romann-broque:fixture-annotations:x.y.z"
+  annotationProcessor "io.github.romann-broque:fixture-processor:x.y.z"
 }
 
 // Generate fixtures for tests (src/test/java)
 dependencies {
-  testImplementation "io.github.romann-broque:fixture-annotations"
-  testAnnotationProcessor "io.github.romann-broque:fixture-processor"
+  testImplementation "io.github.romann-broque:fixture-annotations:x.y.z"
+  testAnnotationProcessor "io.github.romann-broque:fixture-processor:x.y.z"
 }
 
 ```
-
-### Kotlin (KAPT)
-
-```kotlin
-dependencies {
-  implementation("io.github.romann-broque:fixture-annotations:x.y.z")
-  kapt("io.github.romann-broque:fixture-processor:x.y.z")
-
-  // For tests:
-  testImplementation("io.github.romann-broque:fixture-annotations:x.y.z")
-  kaptTest("io.github.romann-broque:fixture-processor:x.y.z")
-}
-
-```
-
-### Maven
-
-```xml
-<dependencies>
-  <!-- Generate during main compilation -->
-  <dependency>
-    <groupId>io.github.romann-broque</groupId>
-    <artifactId>fixture-annotations</artifactId>
-    <version>x.y.z</version>
-  </dependency>
-  <dependency>
-    <groupId>io.github.romann-broque</groupId>
-    <artifactId>fixture-processor</artifactId>
-    <version>x.y.z</version>
-    <scope>provided</scope>
-  </dependency>
-
-  <!-- OR generate during test compilation -->
-  <!--
-  <dependency>
-    <groupId>io.github.romann-broque</groupId>
-    <artifactId>fixture-annotations</artifactId>
-    <version>x.y.z</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>io.github.romann-broque</groupId>
-    <artifactId>fixture-processor</artifactId>
-    <version>x.y.z</version>
-    <scope>test</scope>
-  </dependency>
-  -->
-</dependencies>
-
-```
-
 ---
 
-## Usage example
+## 🧪 Usage example
 
 Assuming you have a `Customer` model you want to test:
 
@@ -135,21 +84,21 @@ public class Customer {
 }
 ```
 
-### Using the generated Fixture DSL
+### 🧩 Using the generated Fixture
 
 You can create a `DataSet` class annotated with `@Fixture`.
 The annotation processor generates a fluent, chainable builder:
 
-- `buildDefault()` → immediately builds the entity using **all default values** from your `DataModel`.
-- `defaultFixture()` → returns a **mutable builder** pre-filled with the `DataModel` defaults; call `build()` to create the entity.
-- `with<Field>(value)` → overrides a single field on the underlying `DataModel`.
-- `without<Field>()` → convenience for `with<Field>(null)` (sets the model field to `null`).
-- All `with…`/`without…` methods are **chainable**; **last call wins**.
+- ⚡ `buildDefault()` → immediately builds the entity using **all default values** from your `DataModel`.
+- 🧱 `defaultFixture()` → returns a **mutable builder** pre-filled with the `DataModel` defaults; call `build()` to create the entity.
+- 🛠️ `with<Field>(value)` → overrides a single field on the underlying `DataModel`.
+- 🚫 `without<Field>()` → convenience for `with<Field>(null)` (sets the model field to `null`).
+- 🔗 All `with…`/`without…` methods are **chainable**; **last call wins**.
 
-> Generated sources live under  
+> 🗂️ Generated sources live under  
 > `build/generated/sources/annotationProcessor/java/(main|test)/...`
 
-### Minimal example
+### ✨ Minimal example
 
 ```java
 @GenerateFixture(entityClass = Customer.class, dataModelClass = CustomerDataSet.DataModel.class)
@@ -167,7 +116,7 @@ public class CustomerDataSet {
   }
 }
 ```
-#### Build with defaults
+#### ✅ Build with defaults
 
 ```java
 // Exactly equivalent:
@@ -175,7 +124,7 @@ Customer a = CustomerFixture.buildDefault();
 Customer b = CustomerFixture.defaultFixture().build();
 ```
 
-#### Override selected fields (with…) and chain
+#### ✏️ Override selected fields (with…) and chain
 
 ```java
 Customer c = CustomerFixture
@@ -186,7 +135,7 @@ Customer c = CustomerFixture
     .build();
 ```
 
-#### Explicitly null a field (without…)
+#### 🚫 Explicitly null a field (without…)
 
 ```java
 Customer d = CustomerFixture
@@ -200,7 +149,7 @@ assertThrows(CustomerException.class, () ->
     CustomerFixture.defaultFixture().withoutEmail().build()
 );
 ```
-#### Combine with… and without… freely (order doesn’t matter; last wins)
+#### 🔀 Combine with… and without… freely (order doesn’t matter; last wins)
 
 ```java
 Customer e = CustomerFixture
@@ -212,7 +161,7 @@ Customer e = CustomerFixture
     .build();
 ```
 
-#### Parameterized tests stay clean and intention-revealing
+#### 🔁 Parameterized tests stay clean and intention-revealing
 
 ```java
 @ParameterizedTest
@@ -229,22 +178,26 @@ static Stream<Arguments> validAdultBirthDateProvider() {
   );
 }
 ```
+### 🎉 That's it!
+Once you created the `DataSet` class, the fixture will be generated at compile time.
+So build your project, and start using the generated `*Fixture` class in your tests.
+
 ---
 
-## Additional resources
+## 📚 Additional resources
 
 - https://refactoring.guru/design-patterns/builder
 - https://ardalis.com/improve-tests-with-the-builder-pattern-for-test-data/
 
-## Thanks
+## 🙏 Thanks
 
 Special thanks to [Frédéric Foissey](https://github.com/ffoissey) for the original idea and initial implementation of these modules. The current codebase extends and maintains his initial work.
 
-## Contributing
+## 🤝 Contributing
 
 Issues and PRs are welcome. Please include a minimal reproduction for bugs.
 
-## Notices & License
+## 📄 Notices & License
 
 - License: [Apache-2.0](./LICENSE)
 - Notices: see [NOTICE](./NOTICE)
