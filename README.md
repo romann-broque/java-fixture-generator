@@ -33,3 +33,112 @@ dependencies {
   testImplementation "io.github.romann-broque:fixture-annotations"
   testAnnotationProcessor "io.github.romann-broque:fixture-processor"
 }
+
+```
+
+### Kotlin (KAPT)
+
+```kotlin
+dependencies {
+  implementation("io.github.romann-broque:fixture-annotations:x.y.z")
+  kapt("io.github.romann-broque:fixture-processor:x.y.z")
+
+  // For tests:
+  testImplementation("io.github.romann-broque:fixture-annotations:x.y.z")
+  kaptTest("io.github.romann-broque:fixture-processor:x.y.z")
+}
+
+```
+
+### Maven
+
+```xml
+<dependencies>
+  <!-- Generate during main compilation -->
+  <dependency>
+    <groupId>io.github.romann-broque</groupId>
+    <artifactId>fixture-annotations</artifactId>
+    <version>x.y.z</version>
+  </dependency>
+  <dependency>
+    <groupId>io.github.romann-broque</groupId>
+    <artifactId>fixture-processor</artifactId>
+    <version>x.y.z</version>
+    <scope>provided</scope>
+  </dependency>
+
+  <!-- OR generate during test compilation -->
+  <!--
+  <dependency>
+    <groupId>io.github.romann-broque</groupId>
+    <artifactId>fixture-annotations</artifactId>
+    <version>x.y.z</version>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>io.github.romann-broque</groupId>
+    <artifactId>fixture-processor</artifactId>
+    <version>x.y.z</version>
+    <scope>test</scope>
+  </dependency>
+  -->
+</dependencies>
+
+```
+
+---
+
+## Usage
+
+
+Assuming you have a `Client` model you want to test:
+
+```java
+
+public class Client {
+  private Long id;
+  private String name;
+  private String email;
+  private boolean active;
+  private LocalDateTime createdAt;
+  // constructors, getters, setters...
+}
+```
+
+You can create a `DataSet` class annotated with `@Fixture` to define default values and variations:
+
+```java
+package org.example.testfixtures.fixtures.client;
+
+import io.github.romannbroque.fixture.annotations.GenerateFixture;
+
+@GenerateFixture(
+    entityClass = Client.class,
+    dataModelClass = ClientDataSet.DataModel.class
+)
+public class ClientDataSet {
+
+  public static Client build(final DataModel model) {
+    return Client.create(
+        model.firstName,
+        model.lastName,
+        model.phoneNumber,
+        model.birthDate
+    );
+  }
+
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class DataModel {
+    public String firstName = "John";
+    public String lastName = "Smith";
+    public String phoneNumber = "+1234567890";
+    public LocalDate birthDate = LocalDate.of(1990, 1, 1);
+  }
+}
+```
+---
+
+## Contributing
+
+Issues and PRs are welcome. Please include a minimal reproduction for bugs.
