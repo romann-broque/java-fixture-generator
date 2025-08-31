@@ -28,7 +28,7 @@ dependencies {
   annotationProcessor "io.github.romann-broque:fixture-processor"
 }
 
-// OR generate fixtures for tests only (src/test/java)
+// Generate fixtures for tests (src/test/java)
 dependencies {
   testImplementation "io.github.romann-broque:fixture-annotations"
   testAnnotationProcessor "io.github.romann-broque:fixture-processor"
