@@ -88,56 +88,156 @@ dependencies {
 
 ---
 
-## Usage
+## Usage example
 
-
-Assuming you have a `Client` model you want to test:
+Assuming you have a `Customer` model you want to test:
 
 ```java
+package org.example.testfixtures.models;
 
-public class Client {
-  private Long id;
-  private String name;
+import java.time.LocalDate;
+import java.util.Objects;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.example.testfixtures.exceptions.CustomerException;
+
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class Customer {
+  private String firstName;
+  private String lastName;
   private String email;
-  private boolean active;
-  private LocalDateTime createdAt;
-  // constructors, getters, setters...
+  private LocalDate birthDate;
+  private String phoneNumber;
+  private String address;
+
+  public static Customer create(final String firstName,
+                                final String lastName,
+                                final String email,
+                                final LocalDate birthDate,
+                                final String phoneNumber,
+                                final String address) {
+    try {
+      Objects.requireNonNull(firstName, "First name is required");
+      Objects.requireNonNull(lastName, "Last name is required");
+      Objects.requireNonNull(email, "Email is required");
+      Objects.requireNonNull(birthDate, "Birth date is required");
+      return new Customer(firstName, lastName, email, birthDate, phoneNumber, address);
+    } catch (final NullPointerException e) {
+      throw new CustomerException("Failed to create Customer: " + e.getMessage());
+    }
+  }
+
+  public boolean isAdult() {
+    return LocalDate.now().isAfter(birthDate.plusYears(18));
+  }
 }
 ```
 
-You can create a `DataSet` class annotated with `@Fixture` to define default values and variations:
+### Using the generated Fixture DSL
+
+You can create a `DataSet` class annotated with `@Fixture`.
+The annotation processor generates a fluent, chainable builder:
+
+- `buildDefault()` → immediately builds the entity using **all default values** from your `DataModel`.
+- `defaultFixture()` → returns a **mutable builder** pre-filled with the `DataModel` defaults; call `build()` to create the entity.
+- `with<Field>(value)` → overrides a single field on the underlying `DataModel`.
+- `without<Field>()` → convenience for `with<Field>(null)` (sets the model field to `null`).
+- All `with…`/`without…` methods are **chainable**; **last call wins**.
+
+> Generated sources live under  
+> `build/generated/sources/annotationProcessor/java/(main|test)/...`
+
+### Minimal example
 
 ```java
-package org.example.testfixtures.fixtures.client;
-
-import io.github.romannbroque.fixture.annotations.GenerateFixture;
-
-@GenerateFixture(
-    entityClass = Client.class,
-    dataModelClass = ClientDataSet.DataModel.class
-)
-public class ClientDataSet {
-
-  public static Client build(final DataModel model) {
-    return Client.create(
-        model.firstName,
-        model.lastName,
-        model.phoneNumber,
-        model.birthDate
-    );
+@GenerateFixture(entityClass = Customer.class, dataModelClass = CustomerDataSet.DataModel.class)
+public class CustomerDataSet {
+  public static Customer build(DataModel m) {
+    return Customer.create(m.firstName, m.lastName, m.email, m.birthDate, m.phoneNumber, m.address);
   }
-
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class DataModel {
     public String firstName = "John";
-    public String lastName = "Smith";
-    public String phoneNumber = "+1234567890";
+    public String lastName  = "Smith";
+    public String email     = "john.smith@corporation.com";
     public LocalDate birthDate = LocalDate.of(1990, 1, 1);
+    public String phoneNumber = "+1234567890";
+    public String address     = "123 Main St, Anytown, USA";
   }
+}
+```
+#### Build with defaults
+
+```java
+// Exactly equivalent:
+Customer a = CustomerFixture.buildDefault();
+Customer b = CustomerFixture.defaultFixture().build();
+```
+
+#### Override selected fields (with…) and chain
+
+```java
+Customer c = CustomerFixture
+    .defaultFixture()
+    .withFirstName("Alice")
+    .withLastName("Doe")
+    .withPhoneNumber("+33 6 12 34 56 78")
+    .build();
+```
+
+#### Explicitly null a field (without…)
+
+```java
+Customer d = CustomerFixture
+.defaultFixture()
+.withoutAddress()     // same as .withAddress(null)
+.build();
+```
+If your factory/constructor enforces non-nulls (e.g., email is required), you can assert failures:
+```java
+assertThrows(CustomerException.class, () ->
+    CustomerFixture.defaultFixture().withoutEmail().build()
+);
+```
+#### Combine with… and without… freely (order doesn’t matter; last wins)
+
+```java
+Customer e = CustomerFixture
+    .defaultFixture()
+    .withoutPhoneNumber()
+    .withBirthDate(LocalDate.now().minusYears(25))
+    .withoutAddress()
+    .withAddress("42 Rue de la Paix")     // last setter wins → address is NOT null
+    .build();
+```
+
+#### Parameterized tests stay clean and intention-revealing
+
+```java
+@ParameterizedTest
+@MethodSource("validAdultBirthDateProvider")
+void qualifies_as_adult(LocalDate birthDate) {
+  Customer customer = CustomerFixture.defaultFixture().withBirthDate(birthDate).build();
+  assertTrue(customer.isAdult());
+}
+
+static Stream<Arguments> validAdultBirthDateProvider() {
+  return Stream.of(
+      Arguments.of(LocalDate.now().minusYears(18).minusDays(1)),
+      Arguments.of(LocalDate.now().minusYears(25))
+  );
 }
 ```
 ---
+
+## Additional resources
+
+- https://refactoring.guru/design-patterns/builder
+- https://ardalis.com/improve-tests-with-the-builder-pattern-for-test-data/
+## Thanks
+
+Special thanks to [Frédéric Foissey](https://github.com/ffoissey) for the original idea and initial implementation of these modules. The current codebase extends and maintains his initial work.
 
 ## Contributing
 
