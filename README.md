@@ -5,8 +5,9 @@
 [![Javadoc](https://javadoc.io/badge2/io.github.romann-broque/fixture-annotations/javadoc.svg)](https://javadoc.io/doc/io.github.romann-broque/fixture-annotations)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
-Generate **Java test fixtures** from annotated `DataSet` classes at **compile time** (annotation processor).
-Less boilerplate, more readable tests.
+Stop wiring test objects by hand. Fixtures are now writing themselves. </br>
+
+Annotate a `DataSet` and let the compiler produce a fluent `*Fixture` API (`buildDefault()`, `with…`, `without…`) so you can express test intent in a couple of lines.
 
 - **`fixture-annotations`** — public annotations to mark your DataSet classes
 - **`fixture-processor`** — the annotation processor that generates fixture builders
