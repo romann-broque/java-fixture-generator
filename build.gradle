@@ -39,7 +39,7 @@ subprojects {
                 pom {
                     name = project.name
                     description = "Fixtures modules: ${project.name}"
-                    url = "https://github.com/romannbroque/fixtures"
+                    url = "https://github.com/romann-broque/fixtures"
                     licenses {
                         license {
                             name = "Apache-2.0"
