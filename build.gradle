@@ -26,6 +26,13 @@ subprojects {
     apply plugin: "maven-publish"
     apply plugin: "signing"
 
+    tasks.withType(Jar).configureEach {
+        from("$rootDir/LICENSE") { into "META-INF" }
+        if (file("$rootDir/NOTICE").exists()) {
+            from("$rootDir/NOTICE") { into "META-INF" }
+        }
+    }
+
     java {
         toolchain { languageVersion = JavaLanguageVersion.of(21) }
         withSourcesJar()
@@ -47,6 +54,11 @@ subprojects {
                         }
                     }
                     developers {
+                        developer {
+                            id = "ffoissey"
+                            name = "Frédéric Foissey"
+                            email = "ffoissey@users.noreply.github.com"
+                        }
                         developer {
                             id = "romann-broque"
                             name = "Romann Broque"

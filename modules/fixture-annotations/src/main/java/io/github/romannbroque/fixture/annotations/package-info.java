@@ -1,6 +1,8 @@
 /**
  * This package contains the core annotations and interfaces for the fixture generation mechanism.
  *
+ * <p>Authors: Frédéric Foissey, Romann Broque</p>
+ *
  * <p>
  * The {@link io.github.romannbroque.fixture.annotations.GenerateFixture} annotation is used to mark a class
  * as a dataset provider for a specific domain entity. This triggers the automatic generation of a
