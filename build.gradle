@@ -1,0 +1,89 @@
+plugins {
+    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
+    id "maven-publish"
+}
+
+allprojects {
+    group = findProperty("GROUP")
+    version = findProperty("VERSION_NAME")
+}
+
+def loadSigningKey() {
+    def k = findProperty("signingKey") ?: System.getenv("GPG_SIGNING_KEY")
+    if (k) return k
+
+    def kb64 = findProperty("signingKeyB64") ?: System.getenv("GPG_SIGNING_KEY_B64")
+    if (kb64) return new String(Base64.decoder.decode(kb64 as String), "UTF-8")
+
+    def kfile = findProperty("signingKeyFile") ?: System.getenv("GPG_SIGNING_KEY_FILE")
+    if (kfile) return new File(kfile as String).getText("UTF-8")
+
+    return null
+}
+
+subprojects {
+    apply plugin: "java-library"
+    apply plugin: "maven-publish"
+    apply plugin: "signing"
+
+    java {
+        toolchain { languageVersion = JavaLanguageVersion.of(21) }
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                pom {
+                    name = project.name
+                    description = "Fixtures modules: ${project.name}"
+                    url = "https://github.com/romannbroque/fixtures"
+                    licenses {
+                        license {
+                            name = "Apache-2.0"
+                            url  = "https://www.apache.org/licenses/LICENSE-2.0"
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = "romann-broque"
+                            name = "Romann Broque"
+                            email = "romann-broque@users.noreply.github.com"
+                        }
+                    }
+                    scm {
+                        url = "https://github.com/romann-broque/fixtures"
+                        connection = "scm:git:https://github.com/romann-broque/fixtures.git"
+                        developerConnection = "scm:git:ssh://git@github.com:romann-broque/fixtures.git"
+                    }
+                }
+            }
+        }
+    }
+    signing {
+        required {
+            gradle.taskGraph.hasTask(":publishToSonatype") ||
+                    gradle.taskGraph.hasTask(":closeSonatypeStagingRepository")
+        }
+        def key  = loadSigningKey()
+        def pass = (findProperty("signingPass") ?: System.getenv("GPG_SIGNING_PASSPHRASE"))
+        if (key && pass) {
+            useInMemoryPgpKeys(key, pass)
+            sign publishing.publications.mavenJava
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+            packageGroup.set(findProperty("GROUP"))
+            username = findProperty("sonatypeUsername") ?: System.getenv("SONATYPE_USERNAME")
+            password = findProperty("sonatypePassword") ?: System.getenv("SONATYPE_PASSWORD")
+        }
+    }
+}

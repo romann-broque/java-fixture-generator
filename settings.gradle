@@ -1,0 +1,12 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "fixtures"
+
+include(":fixture-annotations", ":fixture-processor")
+project(":fixture-annotations").projectDir = file("modules/fixture-annotations")
+project(":fixture-processor").projectDir = file("modules/fixture-processor")
