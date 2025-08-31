@@ -26,6 +26,13 @@ subprojects {
     apply plugin: "maven-publish"
     apply plugin: "signing"
 
+    tasks.withType(Jar).configureEach {
+        from("$rootDir/LICENSE") { into "META-INF" }
+        if (file("$rootDir/NOTICE").exists()) {
+            from("$rootDir/NOTICE") { into "META-INF" }
+        }
+    }
+
     java {
         toolchain { languageVersion = JavaLanguageVersion.of(21) }
         withSourcesJar()
