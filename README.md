@@ -1,7 +1,6 @@
 # fixtures
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.romann-broque/fixture-annotations.svg?label=maven%20central)](https://central.sonatype.com/artifact/io.github.romann-broque/fixture-annotations)
-[![Build](https://github.com/romann-broque/fixtures/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/romann-broque/fixtures/actions)
 [![Javadoc](https://javadoc.io/badge2/io.github.romann-broque/fixture-annotations/javadoc.svg)](https://javadoc.io/doc/io.github.romann-broque/fixture-annotations)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
