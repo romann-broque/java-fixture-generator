@@ -1,0 +1,48 @@
+name: Release to Maven Central
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive version from tag
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          echo "Will release version: ${GITHUB_REF_NAME#v}"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Cache Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Prepare GPG key file
+        run: |
+          mkdir -p $HOME/.gnupg
+          echo "${{ secrets.GPG_SIGNING_KEY_B64 }}" | base64 -d > $HOME/.gnupg/fixtures.asc
+          chmod 600 $HOME/.gnupg/fixtures.asc
+
+      - name: Publish to Maven Central (close staging)
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          GPG_SIGNING_PASSPHRASE: ${{ secrets.GPG_SIGNING_PASSPHRASE }}
+        run: |
+          ./gradlew \
+            -PVERSION_NAME="$VERSION" \
+            -PsigningKeyFile="$HOME/.gnupg/fixtures.asc" \
+            -PsigningPass="${GPG_SIGNING_PASSPHRASE}" \
+            -PsonatypeUsername="${SONATYPE_USERNAME}" \
+            -PsonatypePassword="${SONATYPE_PASSWORD}" \
+            clean publishToSonatype closeSonatypeStagingRepository \
+            --no-daemon --info
