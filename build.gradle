@@ -48,6 +48,11 @@ subprojects {
                     }
                     developers {
                         developer {
+                            id = "ffoissey"
+                            name = "Frédéric Foissey"
+                            email = "ffoissey@users.noreply.github.com"
+                        }
+                        developer {
                             id = "romann-broque"
                             name = "Romann Broque"
                             email = "romann-broque@users.noreply.github.com"

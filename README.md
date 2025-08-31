@@ -235,6 +235,7 @@ static Stream<Arguments> validAdultBirthDateProvider() {
 
 - https://refactoring.guru/design-patterns/builder
 - https://ardalis.com/improve-tests-with-the-builder-pattern-for-test-data/
+
 ## Thanks
 
 Special thanks to [Frédéric Foissey](https://github.com/ffoissey) for the original idea and initial implementation of these modules. The current codebase extends and maintains his initial work.
@@ -242,3 +243,8 @@ Special thanks to [Frédéric Foissey](https://github.com/ffoissey) for the orig
 ## Contributing
 
 Issues and PRs are welcome. Please include a minimal reproduction for bugs.
+
+## Notices & License
+
+- License: [Apache-2.0](./LICENSE)
+- Notices: see [NOTICE](./NOTICE)
