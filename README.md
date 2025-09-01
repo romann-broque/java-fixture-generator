@@ -1,4 +1,4 @@
-# fixtures
+# Java Fixture Generator
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.romann-broque/fixture-annotations.svg?label=maven%20central)](https://central.sonatype.com/artifact/io.github.romann-broque/fixture-annotations)
 [![Javadoc](https://javadoc.io/badge2/io.github.romann-broque/fixture-annotations/javadoc.svg)](https://javadoc.io/doc/io.github.romann-broque/fixture-annotations)

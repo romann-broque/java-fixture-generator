@@ -45,8 +45,8 @@ subprojects {
                 from components.java
                 pom {
                     name = project.name
-                    description = "Fixtures modules: ${project.name}"
-                    url = "https://github.com/romann-broque/fixtures"
+                    description = "Java fixture generator modules: ${project.name}"
+                    url = "https://github.com/romann-broque/java-fixture-generator"
                     licenses {
                         license {
                             name = "Apache-2.0"
@@ -66,9 +66,9 @@ subprojects {
                         }
                     }
                     scm {
-                        url = "https://github.com/romann-broque/fixtures"
-                        connection = "scm:git:https://github.com/romann-broque/fixtures.git"
-                        developerConnection = "scm:git:ssh://git@github.com:romann-broque/fixtures.git"
+                        url = "https://github.com/romann-broque/java-fixture-generator"
+                        connection = "scm:git:https://github.com/romann-broque/java-fixture-generator.git"
+                        developerConnection = "scm:git:ssh://git@github.com:romann-broque/java-fixture-generator.git"
                     }
                 }
             }

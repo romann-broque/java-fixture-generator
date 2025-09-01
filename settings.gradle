@@ -5,7 +5,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "fixtures"
+rootProject.name = "java-fixture-generator"
 
 include(":fixture-annotations", ":fixture-processor")
 project(":fixture-annotations").projectDir = file("modules/fixture-annotations")
