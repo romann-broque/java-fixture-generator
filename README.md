@@ -90,7 +90,8 @@ You can create a `DataSet` class annotated with `@Fixture`.
 The annotation processor generates a fluent, chainable builder:
 
 - ⚡ `buildDefault()` → immediately builds the entity using **all default values** from your `DataModel`.
-- 🧱 `defaultFixture()` → returns a **mutable builder** pre-filled with the `DataModel` defaults; call `build()` to create the entity.
+- 🧱 `defaultFixture()` → returns a **mutable builder** pre-filled with the `DataModel` defaults; call `build()` to create the entity. 
+- 🎛️ `withModel(model)` → same as *defaultFixture()*, but seeded with the given DataModel.
 - 🛠️ `with<Field>(value)` → overrides a single field on the underlying `DataModel`.
 - 🚫 `without<Field>()` → convenience for `with<Field>(null)` (sets the model field to `null`).
 - 🔗 All `with…`/`without…` methods are **chainable**; **last call wins**.
@@ -161,6 +162,40 @@ Customer e = CustomerFixture
     .build();
 ```
 
+#### 🎛️ Using a custom DataModel (presets)
+
+Beyond the default DataModel, you can supply a custom model to bootstrap your fixture with a specific preset (e.g., a teen customer, a corporate email, etc.).
+Just declare another DataModel variant and pass it via withModel(...).
+
+#####  Declaration
+
+```java
+@GenerateFixture(entityClass = Customer.class, dataModelClass = CustomerDataSet.DataModel.class)
+public class CustomerDataSet {
+  public static Customer build(DataModel m) {
+    ...
+  }
+  public static class DataModel {
+    ...
+  }
+
+  /** 👇 Preset: under-18 customer (non-adult) */
+  public static class TeenCustomer extends DataModel {
+    public TeenCustomer() {
+      this.birthDate = LocalDate.now().minusYears(16);
+    }
+  }
+}
+```
+
+#####  Usage
+
+```java
+Customer teen = CustomerFixture
+    .withModel(new CustomerDataSet.TeenCustomer())
+    .build();
+```
+
 #### 🔁 Parameterized tests stay clean and intention-revealing
 
 ```java
@@ -178,6 +213,7 @@ static Stream<Arguments> validAdultBirthDateProvider() {
   );
 }
 ```
+
 ### 🎉 That's it!
 Once you created the `DataSet` class, the fixture will be generated at compile time.
 So build your project, and start using the generated `*Fixture` class in your tests.
